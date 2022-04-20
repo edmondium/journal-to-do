@@ -1,26 +1,26 @@
-#include <math.h> 
+#include <math.h>
 #include <stdio.h>
-#include <time.h> 
-#define KE 201 
- int main()
-{ 
+#include <time.h>
+#define KE 201
+int main()
+{
 	double ex[KE];
 	double hy[KE];
-	double T; 
+	double T;
 	double t0;
-	double spread; 
-	double pulse; 
+	double spread;
+	double pulse;
 	float epsilon;
 	float cb[KE];
-	int n; 
+	int n;
 	int k; 
-	int kc; 
+	int kc;
 	int kstart;
 	int NSTEPS; 
 	FILE *ifp;
-	char inputFilename[] = "ex3.doc";
+	char inputFilename[] = "ex3.txt";
 	FILE *ofp;
-	char outputFilename[] = "hy3.doc"; 
+	char outputFilename[] = "hy3.txt";
 	clock_t start = clock();
 	clock_t end = 0;
 	for (k=0; k<KE; k++)
@@ -33,8 +33,10 @@
 		scanf("%f", &kstart);
 		printf ("epsilon --> ");
 		scanf ("%f", &epsilon);
-		for (k=kstart; k<=KE; k++){
-			cb[k]= .5/epsilon;}
+		for (k=kstart; k<=KE; k++)
+		{
+			cb[k]= .5/epsilon;
+		}
 	kc=KE/2;
 	t0=40.0;
 	spread=12;
