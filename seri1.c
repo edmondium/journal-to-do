@@ -1,3 +1,5 @@
+//1D FDTD simulation in free space
+#define _XOPEN_SOURCE
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
@@ -45,6 +47,7 @@ int main()
 			}
 			pulse=exp(-.5*(pow((t0-T)/spread, 2.0)));
 			ex[kc]=pulse;
+			//for (k=2; k<KE-1; k++)
 			for (k=0; k<KE-1; k++)
 			{
 				hy[k]=hy[k]+.5*(ex[k]-ex[k+1]);

@@ -1,7 +1,9 @@
+//Absorbing boundary condition added
+#define _XOPEN_SOURCE
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
-#define KE 201
+#define KE 200
 int main()
 {
 	double ex[KE];
@@ -62,6 +64,7 @@ int main()
 			ex[KE-1]	=	ex_high_m2;
 			ex_high_m2	=	ex_high_m1;
 			ex_high_m1	=	ex[KE-2];
+			//for (k=2; k<KE-1; k++)
 			for (k=0; k<KE-1; k++)
 			{
 				hy[k]=hy[k]+.5*(ex[k]-ex[k+1]);
