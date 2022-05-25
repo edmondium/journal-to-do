@@ -6,6 +6,8 @@
 			"label": "C/C++: gcc build active file",
 			"command": "/usr/bin/gcc",
 			"args": [
+				"-O3",
+				"-march=native",
 				"-fdiagnostics-color=always",
 				"-g",
 				"${file}",
