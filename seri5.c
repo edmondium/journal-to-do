@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
-#define KE 200
+#define KE 201
 int main()
 {
 	double ex[KE];
@@ -49,18 +49,38 @@ int main()
 	NSTEPS=1;
 
 	printf ("Input freq (MHz) --> ");
-	scanf ("%f",&freq_in);
+	if (scanf ("%f",&freq_in)==1)
+	{
 	freq_in = freq_in*1e6;
 	printf ("%f\n", freq_in);
-
-	printf ("dielectric start at --> ");
-	scanf ("%d", &kstart);
-	printf ("epsilon --> ");
-	scanf ("%f", &epsilon);
-	printf ("conductivity --> ");
-	scanf ("%f",&sigma);
-	eaf = dt*sigma/(2*epsz*epsilon);
-	printf ("eaf = %f\n",eaf);
+	}
+	else
+	{
+		printf("Failed to read integer.\n");
+	}	
+	printf ("Dielectric starts at --> ");
+	if (scanf ("%d", &kstart)==1)
+	{printf("Cell = %d\n", kstart);}
+	else
+	{
+		printf("Failed to read integer.\n");
+	}	
+	printf ("Epsilon --> ");
+	if (scanf ("%f", &epsilon)==1)
+	{printf("Dielectric constant = %6.2f\n", epsilon);}
+	else
+	{
+		printf("Failed to read integer.\n");
+	}	
+	printf ("Conductivity --> ");
+	if (scanf ("%f",&sigma)==1)
+	{eaf = dt*sigma/(2*epsz*epsilon);
+	printf ("eaf = %f\n",eaf);}
+	else
+	{
+		printf("Failed to read integer.\n");
+	}
+	
 	for (k=kstart; k<=KE; k++)
 	{
 		ca[k] = (1.- eaf) / (1 + eaf);
@@ -69,8 +89,12 @@ int main()
 	while (NSTEPS>0)
 	{
 		printf("NSTEPS --> ");
-		scanf("%d", &NSTEPS);
-		printf("NSTEPS = %d\n", NSTEPS);
+		if (scanf("%d", &NSTEPS)==1)
+		{printf("NSTEPS = %d\n", NSTEPS);}
+		else
+		{
+			printf("Failed to read integer.\n");
+		}		
 		n=0;
 		for (n=1; n<=NSTEPS; n++)
 		{
@@ -82,7 +106,7 @@ int main()
 			pulse=sin(2*M_PI*freq_in*dt*T);
 			ex[5]=ex[5]+pulse;
 	//		printf("T = %5.0f | pulse = %5.0f | ex[5] = %f\n",T,pulse,ex[5]);
-			for (k=1; k<KE-1; k++)
+			for (k=0; k<KE-1; k++)
 			{
 				hy[k]=hy[k]+.5*(ex[k]-ex[k+1]);
 			}
@@ -97,7 +121,7 @@ int main()
 		fprintf(ifp, "# NSTEPS = %d\n", NSTEPS);
 		fprintf(ifp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ifp, "# k\t ex[k]\n");
-		for (k=1; k<=KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ifp, "%3d %f\n", k, ex[k]);
 		}
@@ -107,7 +131,7 @@ int main()
 		fprintf(ofp, "# NSTEPS = %d\n", NSTEPS);
 		fprintf(ofp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ofp, "# k\t hy[k]\n");
-		for (k=1; k<=KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ofp, "%3d %f\n", k, hy[k]);
 		}

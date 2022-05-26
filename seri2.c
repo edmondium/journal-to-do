@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
-#define KE 200
+#define KE 201
 int main()
 {
 	double ex[KE];
@@ -45,8 +45,13 @@ int main()
 	while (NSTEPS>0)
 	{
 		printf("NSTEPS --> ");
-		scanf("%d", &NSTEPS);
-		printf("NSTEPS = %d\n", NSTEPS);
+		if (scanf("%d", &NSTEPS)==1)
+		{printf("NSTEPS = %d\n", NSTEPS);}
+		else
+		{
+			printf("Failed to read integer.\n");
+		}
+		
 		n=0;
 		for (n=1; n<=NSTEPS; n++)
 		{
@@ -80,7 +85,7 @@ int main()
 		fprintf(ifp, "# NSTEPS = %d\n", NSTEPS);
 		fprintf(ifp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ifp, "# k\t ex[k]\n");
-		for (k=1; k<=KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ifp, "%3d %f\n", k, ex[k]);
 		}
@@ -90,7 +95,7 @@ int main()
 		fprintf(ofp, "# NSTEPS = %d\n", NSTEPS);
 		fprintf(ofp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ofp, "# k\t hy[k]\n");
-		for (k=1; k<=KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ofp, "%3d %f\n", k, hy[k]);
 		}

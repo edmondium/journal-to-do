@@ -2,8 +2,9 @@
 #define _XOPEN_SOURCE
 #include <math.h>
 #include <stdio.h>
+#include <omp.h>
 #include <time.h>
-#define KE 200
+#define KE 201
 int main()
 {
 	double ex[KE];
@@ -20,8 +21,10 @@ int main()
 	char inputFilename[] = "ex.txt";
 	FILE *ofp;
 	char outputFilename[] = "hy.txt";
-	clock_t start = clock();
-	clock_t end = 0;
+	/*clock_t start = clock();
+	clock_t end = 0;*/
+	clock_t start;
+	clock_t end;	
 	for (k=0; k<KE; k++)
 	{
 		ex[k]=0;
@@ -41,8 +44,14 @@ int main()
 		{
 			printf("Failed to read integer.\n");
 		}
-		
 		n=0;
+		#ifdef _OPENMP
+		double starttime=omp_get_wtime();
+		#else
+		start=clock();
+		#endif
+		#pragma omp parallel
+		{
 		for (n=1; n<=NSTEPS; n++)
 		{
 			T=T+1;
@@ -52,13 +61,17 @@ int main()
 			}
 			pulse=exp(-.5*(pow((t0-T)/spread, 2.0)));
 			ex[kc]=pulse;
-			//for (k=2; k<KE-1; k++)
 			for (k=0; k<KE-1; k++)
 			{
 				hy[k]=hy[k]+.5*(ex[k]-ex[k+1]);
 			}
 		}
+		}
+		#ifdef _OPENMP
+		double endtime=omp_get_wtime();
+		#else
 		end=clock();
+		#endif
 	/*	printf("k\t ex[k]\t hy[k]\n"); 
 		for (k=1; k<=KE; k++)
 		{
@@ -70,7 +83,7 @@ int main()
 		fprintf(ifp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ifp, "# k\t ex[k]\n");
 		//for (k=1; k<=KE; k++)
-		for (k=1; k<KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ifp, "%3d %f\n", k, ex[k]);
 		}
@@ -82,14 +95,19 @@ int main()
 		fprintf(ofp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ofp, "# k\t hy[k]\n");
 		//for (k=1; k<=KE; k++)
-		for (k=1; k<KE; k++)
+		for (k=0; k<KE; k++)
 		{
 			fprintf(ofp, "%3d %f\n", k, hy[k]);
 		}
 		fprintf(ofp, "# Waktu eksekusi = %f detik.\n", ((double)end-(double)start)/CLOCKS_PER_SEC);
 		fclose(ofp);
+
 		printf("T = %5.0f\n", T);
+		#ifdef _OPENMP
+		printf("Time taken = %f second.\n", endtime-starttime);
+		#else
 		printf("Waktu eksekusi = %f detik.\n",((double)end-(double)start)/CLOCKS_PER_SEC);
+		#endif
 	break;
 	}
 	return 0;
