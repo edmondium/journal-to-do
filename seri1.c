@@ -21,10 +21,20 @@ int main()
 	char inputFilename[] = "ex.txt";
 	FILE *ofp;
 	char outputFilename[] = "hy.txt";
-	/*clock_t start = clock();
-	clock_t end = 0;*/
 	clock_t start;
-	clock_t end;	
+	clock_t end;
+	int numThreads;
+	#pragma omp parallel default(none) shared(numThreads)
+	{
+		#pragma omp master
+		{
+			#ifdef _OPENMP
+			numThreads = omp_get_num_threads();
+			#else
+			numThreads = 1;
+			#endif
+		}
+	}
 	for (k=0; k<KE; k++)
 	{
 		ex[k]=0;
@@ -52,15 +62,18 @@ int main()
 		#endif
 		#pragma omp parallel
 		{
+		#pragma omp single
 		for (n=1; n<=NSTEPS; n++)
 		{
 			T=T+1;
+			//#pragma omp simd
 			for (k=1; k<KE; k++)
 			{
 				ex[k]=ex[k]+.5*(hy[k-1]-hy[k]);
 			}
 			pulse=exp(-.5*(pow((t0-T)/spread, 2.0)));
 			ex[kc]=pulse;
+			//#pragma omp simd
 			for (k=0; k<KE-1; k++)
 			{
 				hy[k]=hy[k]+.5*(ex[k]-ex[k+1]);
@@ -82,12 +95,16 @@ int main()
 		fprintf(ifp, "# NSTEPS = %d\n", NSTEPS);
 		fprintf(ifp, "# t0-T = %5.0f | ex[kc] = %f\n", t0-T, ex[kc]);
 		fprintf(ifp, "# k\t ex[k]\n");
-		//for (k=1; k<=KE; k++)
+		//#pragma omp parallel for
 		for (k=0; k<KE; k++)
 		{
 			fprintf(ifp, "%3d %f\n", k, ex[k]);
 		}
-		fprintf(ifp, "# Waktu eksekusi = %f detik.\n", ((double)end-(double)start)/CLOCKS_PER_SEC);
+		//#ifdef _OPENMP
+		//fprintf(ofp, "# Time taken = %f second on %i threads.\n", endtime-starttime, numThreads);
+		//#else		
+		fprintf(ifp, "# Waktu eksekusi = %f detik pada %i thread.\n", ((double)end-(double)start)/CLOCKS_PER_SEC, numThreads);
+		//#endif
 		fclose(ifp);
 
 		ofp = fopen(outputFilename, "w");
@@ -99,14 +116,18 @@ int main()
 		{
 			fprintf(ofp, "%3d %f\n", k, hy[k]);
 		}
-		fprintf(ofp, "# Waktu eksekusi = %f detik.\n", ((double)end-(double)start)/CLOCKS_PER_SEC);
+		#ifdef _OPENMP
+		fprintf(ofp, "# Time taken = %f second on %i threads.\n", endtime-starttime, numThreads);
+		#else
+		fprintf(ofp, "# Waktu eksekusi = %f detik pada %i thread.\n", ((double)end-(double)start)/CLOCKS_PER_SEC, numThreads);
+		#endif
 		fclose(ofp);
 
 		printf("T = %5.0f\n", T);
 		#ifdef _OPENMP
-		printf("Time taken = %f second.\n", endtime-starttime);
+		printf("Time taken = %f second on %i threads.\n", endtime-starttime, numThreads);
 		#else
-		printf("Waktu eksekusi = %f detik.\n",((double)end-(double)start)/CLOCKS_PER_SEC);
+		printf("Waktu eksekusi = %f detik pada %i thread.\n",((double)end-(double)start)/CLOCKS_PER_SEC, numThreads);
 		#endif
 	break;
 	}
