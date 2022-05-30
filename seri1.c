@@ -4,17 +4,17 @@
 #include <stdio.h>
 #include <omp.h>
 #include <time.h>
-#define KE 201
+#define KE 20001
 int main()
 {
 	double ex[KE];
-	double hy[KE]; 
+	double hy[KE];
 	double T;
 	double t0;
 	double spread;
 	double pulse;
 	int n;
-	int k; 
+	int k;
  	int kc;
 	int NSTEPS;
 	FILE *ifp;
@@ -42,8 +42,16 @@ int main()
 		hy[k]=0.;
 	}
 	kc=KE/2;
-	t0=40.0;
-	spread=12;
+	t0=4000.0;
+	/*printf("Center of the incident pulse t0 = ");
+	if (scanf("%lf", &t0)==1)
+	{printf("t0 = %f\n", t0);}
+	else
+	{
+		printf("Failed to read double.\n");
+	}*/
+	
+	spread=1200;
 	T=0;
 	NSTEPS=1;
 	while (NSTEPS>0)
